@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import VetAppointment from '../views/VetAppointment';
+import Spinner from '../../components/ui/Spinner';
 
 export default function DynamicHospitalPage() {
   const { hospitalType } = useParams(); // Assume route param: /vet-appointment/:hospitalType
@@ -8,6 +10,7 @@ export default function DynamicHospitalPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const auth = useSelector((state) => state.auth);
   // Fetch the hospital data from the API
   useEffect(() => {
     const fetchHospitalData = async () => {
@@ -42,7 +45,11 @@ export default function DynamicHospitalPage() {
   }, [hospitalType]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner color = {
+                auth?.user?.role === 'User' 
+                          ? 'indigo' : 
+                            auth?.user?.role === 'Admin' ? 'red' : 'green'
+              }/>;
   }
 
   if (error) {

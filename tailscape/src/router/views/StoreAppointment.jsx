@@ -3,6 +3,7 @@ import { CalendarIcon, CheckCircleIcon, XCircleIcon, ClockIcon } from '@heroicon
 import { PawPrint, Dog, Cat, Bird } from 'lucide-react';
 import FadeInOnScroll from '../../utilities/FadeInOnScroll';
 import { useSelector } from 'react-redux';
+import Spinner from '../../components/ui/Spinner';
 
 const petIcons = {
   dog: Dog,
@@ -43,7 +44,7 @@ export default function PetStoreBookingPage() {
         setLoading(false); // Set loading to false once the data is fetched
       }
     };
-    
+
     fetchAppointments();
   }, []);
 
@@ -98,9 +99,11 @@ export default function PetStoreBookingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span>Loading...</span>
-      </div>
+      <Spinner color={
+        auth?.user?.role === 'User'
+          ? 'indigo' :
+          auth?.user?.role === 'Admin' ? 'red' : 'green'
+      } />
     );
   }
 

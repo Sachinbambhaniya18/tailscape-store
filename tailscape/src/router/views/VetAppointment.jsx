@@ -4,6 +4,7 @@ import { Dog, Cat, Bird, PawPrint } from 'lucide-react';
 import Carousel from '../../components/Carousel';
 import FadeInOnScroll from '../../utilities/FadeInOnScroll';
 import { useSelector } from 'react-redux';
+import Spinner from '../../components/ui/Spinner';
 
 const petIcons = {
   dog: Dog,
@@ -22,34 +23,34 @@ const breedOptions = {
 const VetAppointment = ({ hospitalType, doctors }) => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true); // To track the loading state
-   
+
   const [newAppointmentDate, setNewAppointmentDate] = useState('');
   const [newAppointmentTime, setNewAppointmentTime] = useState('');
   const [newPetType, setNewPetType] = useState('Dog');
   const [newBreed, setNewBreed] = useState('');
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-const auth = useSelector((state) => state.auth);
+  const auth = useSelector((state) => state.auth);
 
   useEffect(() => {
-      // Fetch appointments from the API
-      const fetchAppointments = async () => {
-        try {
-          const response = await fetch(`http://localhost:5000/api/doctorAppointments/doctor-appointments/${auth.user.id}`);
-          if (!response.ok) {
-            throw new Error('Failed to fetch appointments');
-          }
-          const data = await response.json();
-          setAppointments(data.appointments); // Assuming the response has an 'appointments' field
-        } catch (error) {
-          console.error('Error:', error);
-        } finally {
-          setLoading(false); // Set loading to false once the data is fetched
+    // Fetch appointments from the API
+    const fetchAppointments = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/doctorAppointments/doctor-appointments/${auth.user.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch appointments');
         }
-      };
-      
-      fetchAppointments();
-    }, []);
-  const handleBookAppointment = async(e) => {
+        const data = await response.json();
+        setAppointments(data.appointments); // Assuming the response has an 'appointments' field
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false); // Set loading to false once the data is fetched
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+  const handleBookAppointment = async (e) => {
     e.preventDefault();
     const newAppointment = {
       id: Date.now(),
@@ -60,7 +61,7 @@ const auth = useSelector((state) => state.auth);
       breed: newBreed,
       doctor: selectedDoctor._id,
       userId: auth.user.id,
-      hospital : selectedDoctor.vetHospital._id
+      hospital: selectedDoctor.vetHospital._id
     };
 
     try {
@@ -80,16 +81,16 @@ const auth = useSelector((state) => state.auth);
       // Get the response data and update the appointments list
       const savedAppointment = await response.json();
 
-    setAppointments([...appointments, savedAppointment]);
-    setNewAppointmentDate('');
-    setNewAppointmentTime('');
-    setNewPetType('Dog');
-    setNewBreed('');
-    setSelectedDoctor(null);
-    window.location.reload();
-  } catch (error) {
-    console.error('Error:', error);
-  }
+      setAppointments([...appointments, savedAppointment]);
+      setNewAppointmentDate('');
+      setNewAppointmentTime('');
+      setNewPetType('Dog');
+      setNewBreed('');
+      setSelectedDoctor(null);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const getStatusIcon = (status) => {
@@ -105,9 +106,11 @@ const auth = useSelector((state) => state.auth);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span>Loading...</span>
-      </div>
+      <Spinner color={
+        auth?.user?.role === 'User'
+          ? 'indigo' :
+          auth?.user?.role === 'Admin' ? 'red' : 'green'
+      } />
     );
   }
   return (
@@ -130,11 +133,10 @@ const auth = useSelector((state) => state.auth);
                 {doctors.map((doctor) => (
                   <div key={doctor.id} className="h-full relative z-0 py-4">
                     <div
-                      className={`flex flex-col items-center p-4 border rounded-lg shadow-lg cursor-pointer transition duration-300 ease-in-out transform hover:scale-110 hover:z-10 h-full ${
-                        selectedDoctor && selectedDoctor.id === doctor.id
+                      className={`flex flex-col items-center p-4 border rounded-lg shadow-lg cursor-pointer transition duration-300 ease-in-out transform hover:scale-110 hover:z-10 h-full ${selectedDoctor && selectedDoctor.id === doctor.id
                           ? 'bg-indigo-100 border-indigo-500'
                           : 'hover:bg-indigo-50'
-                      }`}
+                        }`}
                       onClick={() => setSelectedDoctor(doctor)}
                     >
                       <img
@@ -239,7 +241,7 @@ const auth = useSelector((state) => state.auth);
                     type="submit"
                     className="col-span-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-lg mt-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
                   >
-                   Book an Appointment with {selectedDoctor.name}
+                    Book an Appointment with {selectedDoctor.name}
                   </button>
                 </form>
               )}
@@ -274,13 +276,12 @@ const auth = useSelector((state) => state.auth);
                       </div>
                       <div className="flex items-center">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            appointment.status === 'approved'
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${appointment.status === 'approved'
                               ? 'bg-green-100 text-green-800'
                               : appointment.status === 'denied'
                                 ? 'bg-red-100 text-red-800'
                                 : 'bg-yellow-100 text-yellow-800'
-                          }`}
+                            }`}
                         >
                           {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
                         </span>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CalendarIcon, CheckCircleIcon, XCircleIcon, ClockIcon } from '@heroicons/react/24/solid';
 import { PawPrint, Dog, Cat, Bird } from 'lucide-react';
 import FadeInOnScroll from '../../utilities/FadeInOnScroll';
+import Spinner from '../../components/ui/Spinner';
 import { useSelector } from 'react-redux';
 export default function MyAppointmentPage() {
 const auth = useSelector((state) => state.auth);
@@ -46,9 +47,11 @@ const auth = useSelector((state) => state.auth);
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span>Loading...</span>
-      </div>
+      <Spinner color = {
+                auth?.user?.role === 'User' 
+                          ? 'indigo' : 
+                            auth?.user?.role === 'Admin' ? 'red' : 'green'
+              }/>
     );
   }
 
