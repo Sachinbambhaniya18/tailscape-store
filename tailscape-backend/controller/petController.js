@@ -1,6 +1,9 @@
 const Pet = require("../model/petModel");
 
-const { authenticateUser, checkAdminRole } = require("../middleware/authMiddleware");
+const {
+  authenticateUser,
+  checkAdminRole,
+} = require("../middleware/authMiddleware");
 exports.getAllPets = async (req, res) => {
   try {
     const pet = await Pet.find();
@@ -43,9 +46,7 @@ exports.createPet = [
     try {
       const pet = new Pet(req.body);
       await pet.save();
-      res
-        .status(201)
-        .json({ message: "Pet created successfully", pet });
+      res.status(201).json({ message: "Pet created successfully", pet });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Server error" });
@@ -58,16 +59,10 @@ exports.updatePet = [
   checkAdminRole,
   async (req, res) => {
     try {
-      const updatedpet = await Pet.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true,
-        }
-      );
-      res
-        .status(200)
-        .json({ message: "Pet updated successfully", updatedpet });
+      const updatedpet = await Pet.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
+      res.status(200).json({ message: "Pet updated successfully", updatedpet });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Server error" });

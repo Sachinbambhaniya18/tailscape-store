@@ -63,9 +63,9 @@ export default function Home() {
             </h2>
             {loading ? (
               <Spinner color = {
-                auth?.user?.role === 'Admin' 
-                          ? 'red' : 
-                            auth?.user?.role === 'User' ? 'indigo' : 'green'
+                auth?.user?.role === 'User' 
+                          ? 'indigo' : 
+                            auth?.user?.role === 'Admin' ? 'red' : 'green'
               }/>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
